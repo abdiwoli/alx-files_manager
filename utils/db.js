@@ -86,6 +86,17 @@ class DBClient {
         const file = await this.db.collection('files').findOne({_id: id });
         return file;
     }
+
+    async  updateFile(fileId, flag) {
+        const id = ObjectId.isValid(fileId) ? new ObjectId(fileId) : fileId;
+        const result = await this.db.collection('files').updateOne(
+        { _id: id },
+            { $set: { isPublic: flag } }
+        );
+        return result.modifiedCount > 0;
+    }
+
+    
     
 }
 
