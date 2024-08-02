@@ -81,8 +81,8 @@ class DBClient {
         return file;
     }
 
-    async getFile(userId){
-        const id = ObjectId.isValid(userId) ? new ObjectId(userId) : userId;
+    async getFile(fileId){
+        const id = ObjectId.isValid(fileId) ? new ObjectId(fileId) : fileId;
         const file = await this.db.collection('files').findOne({_id: id });
         return file;
     }

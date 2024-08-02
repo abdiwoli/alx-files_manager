@@ -115,22 +115,7 @@ class FilesController {
         }
     }
 
-    static async putPublish(req, res) {
-        const users = await Helper.getByToken(req, res);
-        if (!users || !users.user) {
-             return res.status(401).json({ error: 'Unauthorized' });
-        }
 
-        const userId = users.user._id.toString();
-        const fileId = req.params.id;
-        const file = await dbClient.getFile(fileId);
-        if (!file || file.userId.toString() !== userId.toString()) {
-          return res.status(404).json({ error: 'Not found' });
-        }
-        file.isPublic = true;
-        await dbClient.updateFile(fileId, { isPublic: false });
-        res.status(200).json({file});
-    }
 
     static async putUnpublish(req, res) {
         const users = await Helper.getByToken(req, res);
@@ -146,7 +131,6 @@ class FilesController {
         }
 
         file.isPublic = false;
-        await dbClient.updateFile(fileId, { isPublic: false });
         res.status(200).json({file});
     }
 }
