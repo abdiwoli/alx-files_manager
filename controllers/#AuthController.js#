@@ -1,6 +1,5 @@
 /* eslint-disable */
 import { v4 } from 'uuid';
-import SHA1 from 'sha1';
 import auth from 'basic-auth';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
@@ -19,14 +18,12 @@ class AuthController {
 
     if (email && password) {
       const exist = await dbClient.getUsers(email);
-        if (exist) {
-            const shaiPS = SHA1(password);
-            if (shaiPS === exist.password){
-                const token = v4();
-                const key = `auth_${token}`;
-                await redisClient.set(key, exist._id.toString(), 86400);
-                return res.status(200).json({ token });
-            }
+      if (exist) {
+        const token = v4();
+          const key = `auth_${token}`;
+          
+        await redisClient.set(key, exist._id.toString(), 86400);
+        return res.status(200).json({ token });
       }
     }
     res.status(401).json({ error: 'Unauthorized' });
@@ -35,7 +32,7 @@ class AuthController {
     static async getDisconnect(req, res) {
         const data = await Helper.getByToken(req, res);
         if (data.error) {
-            return res.status(401).json({ error: 'Unauthorized' });
+            res.status(401).json({ error: 'Unauthorized' });
         }
       if (data && data.key) {
           const key = data.key;
