@@ -19,16 +19,29 @@ class Helper {
       return {error:true};
   }
 
-  static async getFilesWithPagination(query) {
+    static async getFilesWithPagination(query) {
     try {
         const collection = await dbClient.client.db().collection('files');
-        const results = await collection.aggregate(query).toArray()
-      return results;
+        const results = await collection.aggregate(query).toArray();
+        const arr = [];
+        results.forEach(file => {
+            arr.push(Helper.fileToReturn(file));
+        });
+      return arr;
     } catch (error) {
       console.error('Error retrieving files with pagination:', error);
       throw error;
     }
   }
+
+    static fileToReturn(file){
+        const edited = {id:file._id, ...file};
+        delete edited._id;
+        if (file.type === "folder")
+            return edited;
+        delete edited.localPath
+        return edited;
+    }
 }
 
 export default Helper;

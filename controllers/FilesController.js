@@ -39,8 +39,9 @@ class FilesController {
         });
 
         if (result.insertedId) {
-          const newFile = await files.findOne({ _id: result.insertedId });
-          return res.status(201).json(newFile);
+            const newFile = await files.findOne({ _id: result.insertedId });
+            const edited = {id:newFile._id, ...newFile}
+          return res.status(201).json(edited);
         }
       } else {
         if (!fs.existsSync(FOLDER_PATH)) {
@@ -61,13 +62,12 @@ class FilesController {
           localPath: filePath,
         });
 
-        console.log(result);
 
         if (result.insertedId) {
             const newFile = await files.findOne({ _id: result.insertedId });
-            if (newFile.localPath)
-                delete newFile.localPath;
-          return res.status(201).json(newFile);
+            const editedFile = Helper.fileToReturn(newFile);
+                
+          return res.status(201).json(editedFile);
         }
 
         res.end('failed to create');
@@ -80,13 +80,12 @@ class FilesController {
   static async getShow(req, res) {
     const users = await Helper.getByToken(req, res);
     if (users && users.user) {
-      const fileId = req.params.id;
-      // needs fix
+        const fileId = req.params.id;
       const userId = users.user._id;
       const file = await dbClient.getFile(fileId);
-      console.log(file);
-      if (file && file.userId === userId.toString()) {
-        return res.status(200).json(file);
+        if (file && file.userId === userId.toString()) {
+            const editedFile = Helper.fileToReturn(file);
+        return res.status(200).json(editedFile);
       }
       res.status(404).json({ error: 'Not found' });
     } else {
