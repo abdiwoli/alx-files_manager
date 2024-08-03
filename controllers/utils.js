@@ -12,8 +12,11 @@ class Helper {
     const userId = await redisClient.get(key);
     if (userId) {
       const user = await dbClient.getUsersById(userId);
-      return { user, key };
+        if (user){
+            return { error:false, user, key };
+        }
     }
+      return {error:true};
   }
 
   static async getFilesWithPagination(userId, parentId, skip, limit) {
