@@ -39,7 +39,7 @@ class UsersController {
     const data = await Helper.getByToken(req, res);
     if (data && data.user) {
       const { user } = data;
-      res.status(201).json({ id: user._id, email: user.email });
+        res.status(201).json({ id: user._id.toString(), email: user.email });
     } else {
       res.status(401).json({ error: 'Unauthorized' });
     }
