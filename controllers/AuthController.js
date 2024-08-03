@@ -32,10 +32,14 @@ class AuthController {
     const data = await Helper.getByToken(req, res);
     if (data) {
       const { user, key } = data;
-      await redisClient.del(key);
-      res.status(204);
-      res.end();
-    } else { res.status(401).json({ error: 'Unauthorized' }); }
+      const userId = await redisClient.gey(key);
+      if (user._id.toString() === userId) {
+        await redisClient.del(key);
+        res.status(204);
+        res.end();
+      }
+    }
+    res.status(401).json({ error: 'Unauthorized' });
   }
 }
 
