@@ -133,7 +133,7 @@ class FilesController {
       return res.status(404).json({ error: 'Not found' });
     }
     file.isPublic = true;
-    await dbClient.updateFile(fileId, { isPublic: true });
+    await dbClient.updateFile(fileId, true);
       res.status(200).json(Helper.fileToReturn(file));
   }
 
@@ -151,8 +151,7 @@ class FilesController {
     }
 
     file.isPublic = false;
-      await dbClient.updateFile(fileId, { isPublic: false });
-
+      await dbClient.updateFile(fileId, false);
       res.status(200).json(Helper.fileToReturn(file));
   }
 
@@ -162,9 +161,9 @@ class FilesController {
         if (!file) {
             return res.status(404).json({ error: 'Not found' });
         }
-        const {isPublic} = file.isPublic;
-        console.log(isPublic);
-        if (!isPublic) {
+ 
+        if (!file.isPublic) {
+
             const users = await Helper.getByToken(req, res);
             if (users.error)
                 return res.status(404).json({ error: 'not found' });
