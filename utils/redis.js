@@ -1,8 +1,9 @@
+/* eslint-disable */
 import { createClient } from 'redis';
 import { promisify } from 'util';
 
 class RedisClient {
-  constructor() {
+  constructor () {
     this.client = createClient();
     this.connected = true;
     this.setex = promisify(this.client.SETEX).bind(this.client);
@@ -16,11 +17,11 @@ class RedisClient {
     this.client.on('connect', () => { this.connected = true; });
   }
 
-  isAlive() {
+  isAlive () {
     return this.connected;
   }
 
-  async set(key, value, duration) {
+  async set (key, value, duration) {
     try {
       await this.setex(key, duration, value);
     } catch (err) {
@@ -29,7 +30,7 @@ class RedisClient {
     }
   }
 
-  async get(key) {
+  async get (key) {
     try {
       return await this.get(key);
     } catch (err) {
@@ -38,7 +39,7 @@ class RedisClient {
     }
   }
 
-  async del(key) {
+  async del (key) {
     try {
       return await this.del(key);
     } catch (err) {

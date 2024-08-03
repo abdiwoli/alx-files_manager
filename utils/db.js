@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { MongoClient, ObjectId } from 'mongodb'
 
+/* eslint-disable */
 class DBClient {
   constructor() {
     const host = process.env.DB_HOST || 'localhost';
