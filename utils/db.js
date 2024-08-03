@@ -70,7 +70,7 @@ class DBClient {
     async getFileParent(parentId) {
         try{
             const id = ObjectId.isValid(parentId) ? new ObjectId(parentId) : parentId;
-            const file = await this.db.collection('files').findOne({ _id: id });
+            const file = await this.db.collection('files').findOne({ parentId: parentId });
             return file;
         } catch (error) {
             return null;

@@ -22,7 +22,7 @@ class FilesController {
       if (!data && type !== 'folder') return res.status(400).json({ error: 'Missing data' });
       if (parentId && parentId !== '0') {
         console.log(parentId);
-        const file = await dbClient.getFileParent(parentId);
+        const file = await dbClient.getFile(parentId);
         if (!file) {
           return res.status(400).json({ error: 'Parent not found' });
         }
@@ -94,22 +94,26 @@ class FilesController {
     }
   }
 
-  static async getIndex(req, res) {
+    static async getIndex(req, res) {
     try {
       const users = await Helper.getByToken(req, res);
-      if (!users || !users.user) {
+      if (users.error) {
         return res.status(401).json({ error: 'Unauthorized' });
       }
 
       const userId = users.user._id.toString();
-      const { parentId = 0, page = 0 } = req.query;
+      const { parentId = '0', page = 0 } = req.query;
+        
       const pageNumber = parseInt(page, 10);
       if (isNaN(pageNumber) || pageNumber < 0) {
         return res.status(400).json({ error: 'Invalid page number' });
       }
-      const limit = 20;
-      const skip = pageNumber * limit;
-      const files = await Helper.getFilesWithPagination(userId, parentId, skip, limit);
+        const query =  [
+            { $match: { parentId, userId } },
+            { $skip: pageNumber * 20 },
+            {$limit: 20,},
+        ];
+      const files = await Helper.getFilesWithPagination(query);
       return res.status(200).json(files);
     } catch (error) {
       console.error(error);

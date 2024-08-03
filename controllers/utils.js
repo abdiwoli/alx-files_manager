@@ -19,20 +19,10 @@ class Helper {
       return {error:true};
   }
 
-  static async getFilesWithPagination(userId, parentId, skip, limit) {
+  static async getFilesWithPagination(query) {
     try {
-      const collection = await dbClient.client.db().collection('files');
-
-      console.log('Query Parameters:', {
-        userId, parentId, skip, limit,
-      });
-
-      const results = await collection.aggregate([
-        { $match: { parentId, userId } },
-        { $skip: skip },
-        { $limit: limit },
-      ]).toArray();
-      console.log('Files Found:', results);
+        const collection = await dbClient.client.db().collection('files');
+        const results = await collection.aggregate(query).toArray()
       return results;
     } catch (error) {
       console.error('Error retrieving files with pagination:', error);
