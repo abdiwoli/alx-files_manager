@@ -33,8 +33,8 @@ class AuthController {
         if (data.error) {
             res.status(401).json({ error: 'Unauthorized' });
         }
-      if (data && data.user) {
-        const key = data.key;
+      if (data && data.key) {
+          const key = data.key;
         await redisClient.del(key);
         res.status(204);
         res.end();

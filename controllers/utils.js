@@ -12,7 +12,7 @@ class Helper {
     const userId = await redisClient.get(key);
     if (userId) {
       const user = await dbClient.getUsersById(userId);
-        if (user){
+        if (user && user._id.toString() === userId){
             return { error:false, user, key };
         }
     }
