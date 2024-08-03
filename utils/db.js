@@ -1,5 +1,5 @@
 /* eslint-disable */
-const { MongoClient, ObjectId } = require('mongodb');
+import { MongoClient, ObjectId } from 'mongodb'
 
 class DBClient {
   constructor() {
@@ -71,7 +71,7 @@ class DBClient {
             const id = ObjectId.isValid(parentId) ? new ObjectId(parentId) : parentId;
             const file = await this.db.collection('files').findOne({ _id: id });
             return file;
-        } catch  {
+        } catch (error) {
             return null;
         }
     }
