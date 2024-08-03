@@ -28,22 +28,15 @@ class AuthController {
     res.status(401).json({ error: 'Unauthorized' });
   }
 
-  static async getDisconnect(req, res) {
+static async getDisconnect(req, res) {
     const data = await Helper.getByToken(req, res);
-    if (data.user) {
+    if (data) {
       const { user, key } = data;
-      const userId = await redisClient.get(key);
-      if (user._id.toString() === userId) {
-          await redisClient.del(key);
-          res.status(200);
-          res.end();
-      }
-        else {res.status(401).json({ error: 'Unauthorized' });}
-    } else {
-        res.status(401).json({ error: 'Unauthorized' });
-    }
+      await redisClient.del(key);
+      res.status(204);
+      res.end();
+    } else { res.status(401).json({ error: 'Unauthorized' }); }
   }
-
 }
 
 export default AuthController;
