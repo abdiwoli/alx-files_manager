@@ -30,7 +30,7 @@ class AuthController {
 
     static async getDisconnect(req, res) {
       const data = await Helper.getByToken(req, res);
-      if (data.user) {
+      if (data && data.user) {
         const { user, key } = data;
         await redisClient.del(key);
         res.status(204);
