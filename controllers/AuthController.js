@@ -22,7 +22,7 @@ class AuthController {
         const token = v4();
         const key = `auth_${token}`;
         await redisClient.set(key, exist._id.toString(), 86400);
-        res.status(200).json({ token });
+        return res.status(200).json({ token });
       }
     }
     res.status(401).json({ error: 'Unauthorized' });
@@ -32,15 +32,16 @@ class AuthController {
     const data = await Helper.getByToken(req, res);
     if (data) {
       const { user, key } = data;
-      const userId = await redisClient.gey(key);
+      const userId = await redisClient.get(key);
       if (user._id.toString() === userId) {
-        await redisClient.del(key);
-        res.status(204);
-        res.end();
+          await redisClient.del(key);
+          res.status(200);
+          return res.end();
       }
     }
-    res.status(401).json({ error: 'Unauthorized' });
+      res.status(401).json({ error: 'Unauthorized' });
   }
+
 }
 
 export default AuthController;
