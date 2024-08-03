@@ -134,7 +134,7 @@ class FilesController {
     }
     file.isPublic = true;
     await dbClient.updateFile(fileId, { isPublic: false });
-    res.status(200).json({ file });
+      res.status(200).json({ Helper.fileToReturn(file) });
   }
 
   static async putUnpublish(req, res) {
@@ -152,7 +152,7 @@ class FilesController {
 
     file.isPublic = false;
     await dbClient.updateFile(fileId, { isPublic: false });
-    res.status(200).json({ file });
+    res.status(200).json({ Helper.fileToReturn(file) });
   }
 
   static async getFile(req, res) {
