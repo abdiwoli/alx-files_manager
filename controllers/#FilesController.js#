@@ -21,7 +21,6 @@ class FilesController {
       if (!type) return res.status(400).json({ error: 'Missing type' });
       if (!data && type !== 'folder') return res.status(400).json({ error: 'Missing data' });
       if (parentId && parentId !== '0') {
-        console.log(parentId);
         const file = await dbClient.getFileParent(parentId);
         if (!file) {
           return res.status(400).json({ error: 'Parent not found' });
@@ -64,13 +63,11 @@ class FilesController {
         console.log(result);
 
         if (result.insertedId) {
-            const newFile = await files.findOne({ _id: result.insertedId });
-            if (newFile.localPath)
-                delete newFile.localPath;
+          const newFile = await files.findOne({ _id: result.insertedId });
           return res.status(201).json(newFile);
         }
-
-        res.end('failed to create');
+          
+        res.status(401).json({ error: 'Unauthorized' });
       }
     } else {
       res.status(401).json({ error: 'Unauthorized' });
