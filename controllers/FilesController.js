@@ -133,7 +133,7 @@ class FilesController {
       return res.status(404).json({ error: 'Not found' });
     }
     file.isPublic = true;
-    await dbClient.updateFile(fileId, { isPublic: false });
+    await dbClient.updateFile(fileId, { isPublic: true });
       res.status(200).json(Helper.fileToReturn(file));
   }
 
@@ -162,7 +162,9 @@ class FilesController {
         if (!file) {
             return res.status(404).json({ error: 'Not found' });
         }
-        if (!file.isPublic) {
+        const {isPublic} = file.isPublic;
+        console.log(isPublic);
+        if (!isPublic) {
             const users = await Helper.getByToken(req, res);
             if (users.error)
                 return res.status(404).json({ error: 'not found' });
@@ -174,17 +176,17 @@ class FilesController {
         let filePath;
         if (file.type === 'folder') {
             return res.status(400).json({ error: "A folder doesn't have content" });
-    } else {
-        filePath = file.localPath;
-        if (!fs.existsSync(filePath))
-            return res.status(404).json({ error: 'Not found' });
-    }
+        } else {
+            filePath = file.localPath;
+            if (!fs.existsSync(filePath))
+                return res.status(404).json({ error: 'Not found' });
+        }
         
     try {
       const fileBuffer = fs.readFileSync(filePath);
 
-      const extname = path.extname(file.name); // Use file.filename
-      const mimeType = mime.lookup(extname) || 'application/octet-stream'; // Default to binary stream if unknown
+      const extname = path.extname(file.name);
+      const mimeType = mime.lookup(extname) || 'application/octet-stream';
 
       res.setHeader('Content-Type', mimeType);
       return res.status(200).send(fileBuffer);
