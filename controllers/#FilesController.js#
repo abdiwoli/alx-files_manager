@@ -167,13 +167,13 @@ class FilesController {
             if (users.error)
                 return res.status(404).json({ error: 'not found' });
             const userId = users.user._id.toString();
-            if (file && file.userId.toString() !== userId)
+            if (file && file._userId.toString() !== userId)
                 return res.status(404).json({ error: 'not found' });
         }
 
-        let filePath;
-        if (file.type === 'folder') {
-            return res.status(400).json({ error: "A folder doesn't have content" });
+    let filePath;
+    if (file.type === 'folder') {
+      filePath = path.join(__dirname, 'files', file.filename);
     } else {
         filePath = file.localPath;
         if (!fs.existsSync(filePath))
