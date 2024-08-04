@@ -1,5 +1,6 @@
 /* eslint-disable */
 import fs from 'fs';
+import { promises as fsPromises } from 'fs';
 import path from 'path';
 import { v4 } from 'uuid';
 import mime from 'mime-types';
@@ -189,12 +190,10 @@ class FilesController {
     if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Not found' });
 
     try {
-      const fileBuffer = fs.readFileSync(filePath);
+      const fileBuffer = await fsPromises.readFile(filePath);
 
-      const extname = path.extname(file.name);
-      const mimeType = mime.lookup(extname) || 'application/octet-stream';
-
-      res.setHeader('Content-Type', mimeType);
+        const mimeType = mime.contentType(file.name);
+        res.setHeader('Content-Type', mimeType);
       return res.status(200).send(fileBuffer);
     } catch (err) {
       console.error(err);
