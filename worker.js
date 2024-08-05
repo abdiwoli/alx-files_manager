@@ -1,10 +1,12 @@
 import Queue from 'bull';
 import dbClient from './utils/db';
+import sendMail from './utils/sendmail';
 import imageThumbnail from 'image-thumbnail';
 import { promises as fsPromises } from 'fs';
 import path from 'path';
 
 const fileQueue = new Queue('fileQueue');
+const userQueue = new Queue('userQueue');
 
 fileQueue.process(async (job, done) => {
     const { userId, fileId } = job.data;
@@ -40,6 +42,36 @@ fileQueue.process(async (job, done) => {
     } catch (err) {
         console.error(`Error processing job for fileId ${fileId}:`, err);
         done(err);
+    }
+});
+
+
+// you will need to run the file as:
+//EMAIL_USER=your_email EMAIL_PASS="emailpassword" npm run dev worker.js
+//then email will be sent to created new email from your email
+userQueue.process(async (job, done) => {
+    const { userId } = job.data;
+
+    if (!userId) {
+        return done(new Error("Missing userId"));
+    }
+
+    try {
+        const user = await dbClient.getUsersById(userId);
+        if (!user) {
+            return done(new Error("User not found"));
+        }
+
+        console.log('Sending email from:', process.env.EMAIL_USER);
+
+        await sendMail(user.email);
+
+        console.log(`Welcome ${user.email}!`);
+        done();
+
+    } catch (error) {
+        console.error('Error:', error.message);
+        done(error);
     }
 });
 

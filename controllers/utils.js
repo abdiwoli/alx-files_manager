@@ -1,5 +1,4 @@
 /* eslint-disable */
-
 import { v4 } from 'uuid';
 import auth from 'basic-auth';
 import dbClient from '../utils/db';
@@ -56,9 +55,9 @@ class Helper {
             req.user = data.user;
             req.key = data.key;
             next();
-        }
-        
+        }     
     }
+
 }
 
 export default Helper;

@@ -1,7 +1,9 @@
 /* eslint-disable */
 import SHA1 from 'sha1';
+import Queue from 'bull';
 import dbClient from '../utils/db';
 import Helper from './utils';
+const userQueue = new Queue('userQueue');
 
 class UsersController {
 
@@ -17,7 +19,9 @@ class UsersController {
       if (exist) {
         res.status(400).json({ error: 'Already exist' });
       } else {
-        const inserted = await dbClient.addUsers(email, shaiPS);
+          const inserted = await dbClient.addUsers(email, shaiPS);
+          
+          userQueue.add({ userId: inserted });
         res.status(201).json({ id: inserted, email });
       }
     }
