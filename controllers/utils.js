@@ -35,6 +35,9 @@ class Helper {
   }
 
     static fileToReturn(file){
+        if (file.parentId && file.parentId === "0"){
+            file.parentId = 0;
+        }
         const edited = {id:file._id, ...file};
         delete edited._id;
         if (file.type === "folder")
