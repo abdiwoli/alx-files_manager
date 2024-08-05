@@ -81,10 +81,10 @@ class FilesController {
   }
 
   static async getShow(req, res) {
-    const users = await Helper.getByToken(req, res);
-    if (users && users.user) {
+      const user = req.user;
+    if (user) {
       const fileId = req.params.id;
-      const userId = users.user._id;
+      const userId = user._id;
       const file = await dbClient.getFile(fileId);
       if (file && file.userId === userId.toString()) {
         const editedFile = Helper.fileToReturn(file);
@@ -97,12 +97,9 @@ class FilesController {
 
   static async getIndex(req, res) {
     try {
-      const users = await Helper.getByToken(req, res);
-      if (users.error) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
+        const user = req.user;
 
-      const userId = users.user._id.toString();
+      const userId = user._id.toString();
       const { parentId = '0', page = 0 } = req.query;
 
       const pageNumber = parseInt(page, 10);
@@ -123,12 +120,9 @@ class FilesController {
   }
 
   static async putPublish(req, res) {
-    const users = await Helper.getByToken(req, res);
-    if (!users || !users.user) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+    const user = req.user
 
-    const userId = users.user._id.toString();
+    const userId = user._id.toString();
     const fileId = req.params.id;
     const file = await dbClient.getFile(fileId);
     if (!file || file.userId.toString() !== userId.toString()) {
@@ -140,12 +134,9 @@ class FilesController {
   }
 
   static async putUnpublish(req, res) {
-    const users = await Helper.getByToken(req, res);
-    if (!users || !users.user) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+      const user = req.user;
 
-    const userId = users.user._id.toString();
+    const userId = user._id.toString();
     const fileId = req.params.id;
     const file = await dbClient.getFile(fileId);
     if (!file || file.userId.toString() !== userId.toString()) {
@@ -171,7 +162,6 @@ class FilesController {
     if (!file) {
       return res.status(404).json({ error: 'Not found' });
     }
-
     if (!file.isPublic) {
       const users = await Helper.getByToken(req, res);
       if (users.error) return res.status(404).json({ error: 'not found' });
@@ -183,6 +173,7 @@ class FilesController {
     if (file.type === 'folder') {
       return res.status(400).json({ error: "A folder doesn't have content" });
     }
+        
     filePath = file.localPath;
     if (size && file.type === 'image') {
       filePath = `${filePath}_${size}`;
@@ -191,9 +182,8 @@ class FilesController {
 
     try {
       const fileBuffer = await fsPromises.readFile(filePath);
-
-        const mimeType = mime.contentType(file.name);
-        res.setHeader('Content-Type', mimeType);
+      const mimeType = mime.contentType(file.name);
+      res.setHeader('Content-Type', mimeType);
       return res.status(200).send(fileBuffer);
     } catch (err) {
       console.error(err);

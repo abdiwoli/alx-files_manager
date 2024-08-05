@@ -7,7 +7,7 @@ import redisClient from '../utils/redis';
 import Helper from './utils';
 
 class AuthController {
-  static async getConnect(req, res) {
+    static async getConnect(req, res) {
     const user = auth(req);
 
     if (!user || !user.name || !user.pass) {
@@ -33,18 +33,11 @@ class AuthController {
   }
 
     static async getDisconnect(req, res) {
-        const data = await Helper.getByToken(req, res);
-        if (data.error) {
-            return res.status(401).json({ error: 'Unauthorized' });
-        }
-      if (data && data.key) {
-          const key = data.key;
+                console.log("I am called in dis ");
+        const key = req.key;
         await redisClient.del(key);
         res.status(204);
         res.end();
-      } else {
-          res.status(401).json({ error: 'Unauthorized' });
-      }
     }
 }
 

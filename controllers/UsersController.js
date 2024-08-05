@@ -4,6 +4,7 @@ import dbClient from '../utils/db';
 import Helper from './utils';
 
 class UsersController {
+
   static async postNew(req, res) {
     const { email, password } = req.body;
     if (!email) {
@@ -27,7 +28,6 @@ class UsersController {
     if (email) {
       const deleted = await dbClient.deleteUsers(email);
       if (deleted) {
-        console.log(deleted);
         res.status(200).json({ 'deleted email': email });
         return;
       }
@@ -36,13 +36,8 @@ class UsersController {
   }
 
   static async getMe(req, res) {
-    const data = await Helper.getByToken(req, res);
-    if (data && data.user) {
-      const { user } = data;
-        res.status(200).json({ id: user._id.toString(), email: user.email });
-    } else {
-      res.status(401).json({ error: 'Unauthorized' });
-    }
+      const user = req.user;
+      res.status(200).json({ id: user._id.toString(), email: user.email });
   }
 }
 

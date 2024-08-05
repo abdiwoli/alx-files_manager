@@ -17,6 +17,7 @@ class Helper {
         }
     }
       return {error:true};
+      
   }
 
     static async getFilesWithPagination(query) {
@@ -44,6 +45,19 @@ class Helper {
             return edited;
         delete edited.localPath
         return edited;
+    }
+
+    static async authUser(req, res, next) {
+        const data = await Helper.getByToken(req, res);
+        if (data && data.error){
+            return res.status(401).json({error:"Unauthorized"});
+        }
+        else {
+            req.user = data.user;
+            req.key = data.key;
+            next();
+        }
+        
     }
 }
 
