@@ -5,6 +5,19 @@ import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
 class Helper {
+  static async userOrder(token) {
+    const key = `auth_${token}`;
+    const userId = await redisClient.get(key);
+    if (userId) {
+      const user = await dbClient.getUsersById(userId);
+        if (user && user._id.toString() === userId){
+            return user;
+        }
+    }
+      return null
+      
+  }
+
   static async getByToken(req, res) {
     const token = req.headers['x-token'];
     const key = `auth_${token}`;
